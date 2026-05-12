@@ -106,7 +106,7 @@ if (!mailchimpResponse.ok) {
     'Mailchimp sync failed',
     await mailchimpResponse.text()
   )
-}
+)}}
   return (
     <main className="rsvp-stage">
       <div className="ambient ambient-a" />
