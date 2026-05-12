@@ -66,7 +66,7 @@ useEffect(() => {
     if (step === 'diet') setStep(guest === 'yes' ? 'guestForm' : 'guest')
   }
 
-  const handleSubmit = async (form: HTMLFormElement) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setIsSubmitting(true)
     setSubmitError('')
 
@@ -85,7 +85,7 @@ useEffect(() => {
     } finally {
       setIsSubmitting(false)
     }
-  }
+  
     await fetch('/.netlify/functions/sync-mailchimp', {
    method: 'POST',
   headers: { 'Content-Type': 'application/json' },
@@ -97,7 +97,7 @@ useEffect(() => {
     employee,
     guestDetails,
   }),
-})
+})}
   return (
     <main className="rsvp-stage">
       <div className="ambient ambient-a" />
