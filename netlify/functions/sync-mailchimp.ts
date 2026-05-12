@@ -1,37 +1,40 @@
-import { createHash } from 'node:crypto'
 export default async (request: Request) => {
   try {
     const body = await request.json()
 
-    const {
-      employee,
-      guestDetails,
-      presence,
-      guest,
-      dietaryRestrictions,
-      dietaryDetails,
-    } = body
+    const { employee } = body
 
     const apiKey = process.env.MAILCHIMP_API_KEY
     const audienceId = process.env.MAILCHIMP_AUDIENCE_ID
 
     if (!apiKey || !audienceId) {
       return new Response(
-        JSON.stringify({ error: 'Missing Mailchimp env vars' }),
-        { status: 500 }
+        JSON.stringify({ ok: false, error: 'Missing Mailchimp env vars' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!employee?.email) {
+      return new Response(
+        JSON.stringify({ ok: false, error: 'Missing employee email' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
     const serverPrefix =
-      process.env.MAILCHIMP_SERVER_PREFIX ||
-      apiKey.split('-')[1]
+      process.env.MAILCHIMP_SERVER_PREFIX || apiKey.split('-')[1]
 
-    const hash = createHash('md5')
-  .update(employee.email.toLowerCase())
-  .digest('hex')
-    
-    const response = await fetch(
-      `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members/${hash}`,
+    const subscriberHashBuffer = await crypto.subtle.digest(
+      'MD5',
+      new TextEncoder().encode(employee.email.toLowerCase())
+    )
+
+    const subscriberHash = Array.from(new Uint8Array(subscriberHashBuffer))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('')
+
+    const mailchimpResponse = await fetch(
+      `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members/${subscriberHash}`,
       {
         method: 'PUT',
         headers: {
@@ -41,56 +44,52 @@ export default async (request: Request) => {
         body: JSON.stringify({
           email_address: employee.email,
           status_if_new: 'subscribed',
-          status: 'subscribed',
-
           merge_fields: {
-  FNAME: employee.firstName || '',
-  LNAME: employee.lastName || '',
-}
+            FNAME: employee.firstName || '',
+            LNAME: employee.lastName || '',
           },
-
-          tags: [
-            'internal-rsvp',
-            presence === 'confirmed'
-              ? 'confirmed'
-              : 'declined',
-
-            guest === 'yes'
-              ? 'with-guest'
-              : 'solo',
-
-            dietaryRestrictions === 'yes'
-              ? 'dietary-restrictions'
-              : 'no-dietary-restrictions',
-          ],
+          tags: ['internal-rsvp'],
         }),
       }
     )
 
-const data = await response.json()
+    const data = await mailchimpResponse.json()
 
-if (!response.ok) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      status: response.status,
-      mailchimp: data,
-    }),
-    {
-      status: response.status,
-      headers: { 'Content-Type': 'application/json' },
+    if (!mailchimpResponse.ok) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          status: mailchimpResponse.status,
+          mailchimp: data,
+        }),
+        {
+          status: mailchimpResponse.status,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
     }
-  )
-}
 
-return new Response(
-  JSON.stringify({
-    ok: true,
-    status: response.status,
-    mailchimp: data,
-  }),
-  {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        status: mailchimpResponse.status,
+        mailchimp: data,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
   }
-)
+}
