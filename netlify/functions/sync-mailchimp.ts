@@ -86,9 +86,9 @@ if (!email || !email.includes('@')) {
             MMERGE17: dietaryDetails || '',
           },
           tags: [
-            'internal-rsvp',
-          guest === 'yes' ? 'with-guest' : 'solo',
-          dietaryRestrictions === 'yes' ? 'dietary-restrictions' : 'no-dietary-restrictions',
+            'Funcionários',
+          guest === 'yes' ? 'Convidado' : 'Solo',
+          (dietaryRestrictions === 'yes' ? ['Restrição Alimentar'] : []),
           ],
         }),
       }
