@@ -1,5 +1,14 @@
 export default async (request: Request) => {
   try {
+    if (request.method !== 'POST') {
+  return new Response(
+    JSON.stringify({ ok: false, error: 'Use POST only' }),
+    {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  )
+}
     const body = await request.json()
 
     const { employee } = body
