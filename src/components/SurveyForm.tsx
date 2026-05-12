@@ -1,15 +1,17 @@
 import { Check, ChevronLeft, Network, Pencil, ShieldCheck, Sparkles } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 type Step = 'intro' | 'presence' | 'profile' | 'guest' | 'guestForm' | 'diet' | 'complete'
 
-const collaborator = {
-  firstName: 'Ines',
-  name: 'Ines Almeida',
-  role: 'Customer Success Lead',
-  department: 'Microsoft Portugal | Enterprise',
-  email: 'ines.almeida@microsoft.com',
-  phone: '+351 910 245 830',
+const emptyEmployee = {
+  firstName: '',
+  lastName: '',
+  name: '',
+  role: '',
+  department: '',
+  email: '',
+  phone: '',
+  city: '',
 }
 
 const steps: Step[] = ['intro', 'presence', 'profile', 'guest', 'guestForm', 'diet', 'complete']
@@ -31,6 +33,26 @@ export default function SurveyForm() {
   const [dietDetails, setDietDetails] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [employee, setEmployee] = useState(emptyEmployee)
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search)
+
+  const firstName = params.get('fname') || ''
+  const lastName = params.get('lname') || ''
+
+  setEmployee({
+    firstName,
+    lastName,
+    name: `${firstName} ${lastName}`.trim(),
+    email: params.get('email') || '',
+    phone: params.get('phone') || '',
+    city: params.get('cidade') || '',
+    role: params.get('cargo') || '',
+    department: params.get('depart') || '',
+  })
+}, [])
 
   const stepIndex = Math.max(0, steps.indexOf(step))
   const progress = useMemo(() => ((stepIndex + 1) / steps.length) * 100, [stepIndex])
@@ -64,7 +86,18 @@ export default function SurveyForm() {
       setIsSubmitting(false)
     }
   }
-
+    await fetch('/.netlify/functions/sync-mailchimp', {
+   method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    presence,
+    guest,
+    dietaryRestrictions: diet,
+    dietaryDetails: dietDetails,
+    employee,
+    guestDetails,
+  }),
+})
   return (
     <main className="rsvp-stage">
       <div className="ambient ambient-a" />
@@ -101,11 +134,12 @@ export default function SurveyForm() {
           <input type="hidden" name="guest_phone" value={guestDetails.phone} />
           <input type="hidden" name="guest_relationship" value={guestDetails.relationship} />
           <input type="hidden" name="dietary_details" value={dietDetails} />
-          <input type="hidden" name="collaborator_name" value={collaborator.name} />
-          <input type="hidden" name="collaborator_role" value={collaborator.role} />
-          <input type="hidden" name="collaborator_department" value={collaborator.department} />
-          <input type="hidden" name="collaborator_email" value={collaborator.email} />
-          <input type="hidden" name="collaborator_phone" value={collaborator.phone} />
+          <input type="hidden" name="employee_name" value={employee.name} />
+          <input type="hidden" name="employee_role" value={employee.role} />
+          <input type="hidden" name="employee_department" value={employee.department} />
+          <input type="hidden" name="employee_email" value={employee.email} />
+          <input type="hidden" name="employee_phone" value={employee.phone} />
+          <input type="hidden" name="employee_city" value={employee.city} />
           <p className="hidden" style={{ display: 'none' }}>
             <label>
               Do not fill this out: <input name="bot-field" />
@@ -176,7 +210,7 @@ export default function SurveyForm() {
                 <PromptKicker label="Presence sync" />
                 <div>
                   <h2 className="screen-title">
-                    Ola, {collaborator.firstName}
+                    Ola, {employee.firstName}
                     <span className="ml-2 text-[#168cff]">.</span>
                   </h2>
                   <p className="mt-4 text-xl leading-snug text-slate-200">Confirmas a tua presenca no evento?</p>
@@ -198,11 +232,11 @@ export default function SurveyForm() {
                 <h2 className="screen-title">Dados do colaborador</h2>
                 <div className="data-card">
                   {Object.entries({
-                    Nome: collaborator.name,
-                    Cargo: collaborator.role,
-                    Departamento: collaborator.department,
-                    Email: collaborator.email,
-                    Telefone: collaborator.phone,
+                    Nome: employee.name,
+                    Cargo: employee.role,
+                    Departamento: employee.department,
+                    Email: employee.email,
+                    Telefone: employee.phone,
                   }).map(([label, value]) => (
                     <div key={label} className="data-row">
                       <span>{label}</span>
@@ -214,9 +248,9 @@ export default function SurveyForm() {
                   <button type="button" className="primary-action" onClick={() => setStep('guest')}>
                     Os dados estao corretos
                   </button>
-                  <button type="button" className="choice-action">
-                    <Pencil size={16} /> Editar informacoes
-                  </button>
+                  <button type="button" className="choice-action" onClick={() => setIsEditingProfile(true)}>
+          <Pencil size={16} /> Editar informacoes
+                </button>
                 </div>
               </section>
             )}
