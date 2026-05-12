@@ -81,7 +81,7 @@ useEffect(() => {
 
     if (!response.ok) throw new Error('Submission failed')
 
-    const mailchimpResponse = await fetch('/.netlify/functions/sync-mailchimp', {
+    const mailchimpResponse = await fetch(fetch('/api/sync-mailchimp'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
