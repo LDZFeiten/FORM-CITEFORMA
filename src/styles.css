@@ -348,3 +348,58 @@ button {
     font-size: 29px;
   }
 }
+
+.field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(210, 230, 255, 0.55);
+}
+
+.field-input {
+  width: 100%;
+  height: 46px;
+
+  border: 1px solid rgba(120, 180, 255, 0.18);
+  border-radius: 14px;
+
+  background: rgba(5, 16, 30, 0.72);
+  color: #ffffff;
+
+  padding: 0 14px;
+
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 rgba(47, 156, 255, 0);
+}
+
+.field-input:focus {
+  border-color: rgba(47, 156, 255, 0.75);
+  box-shadow:
+    0 0 0 3px rgba(47, 156, 255, 0.12),
+    0 0 22px rgba(47, 156, 255, 0.16);
+}
+
+.data-card.space-y-4 {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+}
+
+.edit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+}
