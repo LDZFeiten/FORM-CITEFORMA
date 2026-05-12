@@ -93,6 +93,46 @@ if (!email || !email.includes('@')) {
         }),
       }
     )
+    if (
+  guest === 'yes' &&
+  guestDetails?.email &&
+  guestDetails.email.includes('@')
+) {
+  const guestEmail = guestDetails.email.trim().toLowerCase()
+
+  const guestHash = createHash('md5')
+    .update(guestEmail)
+    .digest('hex')
+
+  await fetch(
+    `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members/${guestHash}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `apikey ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email_address: guestEmail,
+        status_if_new: 'subscribed',
+
+        merge_fields: {
+          FNAME: guestDetails?.name || '',
+          PHONE: guestDetails?.phone || '',
+          MMERGE16: guestDetails?.relationship || '',
+        },
+
+        tags: [
+          'Convidado',
+          'Evento Microsoft',
+          ...(dietaryRestrictions === 'yes'
+            ? ['Restrição Alimentar']
+            : []),
+        ],
+      }),
+    }
+  )
+}
 
     const data = await mailchimpResponse.json()
 
