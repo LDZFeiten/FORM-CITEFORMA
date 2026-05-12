@@ -77,10 +77,28 @@ export default async (request: Request) => {
 
     const data = await response.json()
 
-    return new Response(
-      JSON.stringify(data),
-      { status: 200 }
-    )
+console.log('Mailchimp status:', response.status)
+console.log('Mailchimp response:', JSON.stringify(data))
+
+if (!response.ok) {
+  return new Response(
+    JSON.stringify({
+      error: 'Mailchimp API error',
+      status: response.status,
+      details: data,
+    }),
+    { status: response.status }
+  )
+}
+
+return new Response(
+  JSON.stringify({
+    success: true,
+    status: response.status,
+    data,
+  }),
+  { status: 200 }
+)
 
   } catch (error) {
     console.error(error)
