@@ -66,8 +66,24 @@ if (!email || !email.includes('@')) {
           merge_fields: {
             FNAME: employee.firstName || '',
             LNAME: employee.lastName || '',
+            ADDRESS: employee.address || '',
+            PHONE: employee.phone || '',
+            COMPANY: employee.company || '',
+            MMERGE8: employee.city || '',
+            MMERGE9: employee.job || '',
+            MMERGE10: employee.dept || '',
+            
+            MMERGE13: guestDetails?.name || '',
+            MMERGE14: guestDetails?.email || '',
+            MMERGE15: guestDetails?.phone || '',
+            MMERGE16: guestDetails?.relationship || '',
+            MMERGE17: dietaryDetails || '',
           },
-          tags: ['internal-rsvp'],
+          tags: [
+            'internal-rsvp'
+          guest === 'yes' ? 'with-guest' : 'solo',
+          dietaryRestrictions === 'yes' ? 'dietary-restrictions' : 'no-dietary-restrictions',
+          ],
         }),
       }
     )
