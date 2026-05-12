@@ -86,10 +86,10 @@ if (!email || !email.includes('@')) {
             MMERGE17: dietaryDetails || '',
           },
           tags: [
-            'Funcionários',
-          guest === 'yes' ? 'Convidado' : 'Solo',
-          (dietaryRestrictions === 'yes' ? ['Restrição Alimentar'] : []),
-          ],
+  'Funcionário',
+  guest === 'yes' ? 'Convidado' : 'Sozinho',
+  ...(dietaryRestrictions === 'yes' ? ['Restrição Alimentar'] : []),
+],
         }),
       }
     )
@@ -123,12 +123,10 @@ if (!email || !email.includes('@')) {
         },
 
         tags: [
-          'Convidado',
-          'Evento Microsoft',
-          ...(dietaryRestrictions === 'yes'
-            ? ['Restrição Alimentar']
-            : []),
-        ],
+  'Convidado',
+  'Evento Microsoft',
+  ...(dietaryRestrictions === 'yes' ? ['Restrição Alimentar'] : []),
+],
       }),
     }
   )
