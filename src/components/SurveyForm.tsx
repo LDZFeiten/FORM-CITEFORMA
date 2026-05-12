@@ -66,47 +66,47 @@ useEffect(() => {
     if (step === 'diet') setStep(guest === 'yes' ? 'guestForm' : 'guest')
   }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    setIsSubmitting(true)
-    setSubmitError('')
+ const handleSubmit = async (form: HTMLFormElement) => {
+  setIsSubmitting(true)
+  setSubmitError('')
 
-    try {
-      const body = new URLSearchParams(new FormData(form) as never).toString()
-      const response = await fetch('/form-survey.html', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body,
-      })
+  try {
+    const body = new URLSearchParams(new FormData(form) as never).toString()
 
-      if (!response.ok) throw new Error('Submission failed')
-      setStep('complete')
-    } catch {
-      setSubmitError('Nao foi possivel concluir a ligacao. Tenta novamente.')
-    } finally {
-      setIsSubmitting(false)
+    const response = await fetch('/form-survey.html', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    })
+
+    if (!response.ok) throw new Error('Submission failed')
+
+    const mailchimpResponse = await fetch('/.netlify/functions/sync-mailchimp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        presence,
+        guest,
+        dietaryRestrictions: diet,
+        dietaryDetails: dietDetails,
+        employee,
+        guestDetails,
+      }),
+    })
+
+    if (!mailchimpResponse.ok) {
+      console.error('Mailchimp sync failed', await mailchimpResponse.text())
     }
-  
-   const mailchimpResponse = await fetch('/.netlify/functions/sync-mailchimp', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    presence,
-    guest,
-    dietaryRestrictions: diet,
-    dietaryDetails: dietDetails,
-    employee,
-    guestDetails,
-  }),
-})
 
-if (!mailchimpResponse.ok) {
-  console.error(
-    'Mailchimp sync failed',
-    await mailchimpResponse.text()
-  )
-}}
+    setStep('complete')
+  } catch {
+    setSubmitError('Nao foi possivel concluir a ligacao. Tenta novamente.')
+  } finally {
+    setIsSubmitting(false)
+  }
+}
   return (
     <main className="rsvp-stage">
       <div className="ambient ambient-a" />
