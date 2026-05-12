@@ -80,7 +80,7 @@ if (!email || !email.includes('@')) {
             MMERGE17: dietaryDetails || '',
           },
           tags: [
-            'internal-rsvp'
+            'internal-rsvp',
           guest === 'yes' ? 'with-guest' : 'solo',
           dietaryRestrictions === 'yes' ? 'dietary-restrictions' : 'no-dietary-restrictions',
           ],
