@@ -44,17 +44,9 @@ export default async (request: Request) => {
           status: 'subscribed',
 
           merge_fields: {
-            FNAME: employee.firstName,
-            LNAME: employee.lastName,
-            PHONE: employee.phone,
-            MERGE8: employee.city,
-            MERGE9: employee.role,
-            MERGE10: employee.department,
-            MERGE13: guestDetails?.name || '',
-            MERGE14: guestDetails?.email || '',
-            MERGE15: guestDetails?.phone || '',
-            MERGE16: guestDetails?.relationship || '',
-            MERGE17: dietaryDetails || '',
+  FNAME: employee.firstName || '',
+  LNAME: employee.lastName || '',
+}
           },
 
           tags: [
@@ -75,39 +67,30 @@ export default async (request: Request) => {
       }
     )
 
-    const data = await response.json()
-
-console.log('Mailchimp status:', response.status)
-console.log('Mailchimp response:', JSON.stringify(data))
+const data = await response.json()
 
 if (!response.ok) {
   return new Response(
     JSON.stringify({
-      error: 'Mailchimp API error',
+      ok: false,
       status: response.status,
-      details: data,
+      mailchimp: data,
     }),
-    { status: response.status }
+    {
+      status: response.status,
+      headers: { 'Content-Type': 'application/json' },
+    }
   )
 }
 
 return new Response(
   JSON.stringify({
-    success: true,
+    ok: true,
     status: response.status,
-    data,
+    mailchimp: data,
   }),
-  { status: 200 }
-)
-
-  } catch (error) {
-    console.error(error)
-
-    return new Response(
-      JSON.stringify({
-        error: 'Mailchimp sync failed',
-      }),
-      { status: 500 }
-    )
+  {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
   }
-}
+)
