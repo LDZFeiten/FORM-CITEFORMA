@@ -78,6 +78,7 @@ if (!email || !email.includes('@')) {
             MMERGE8: employee.city || '',
             MMERGE9: employee.job || '',
             MMERGE10: employee.dept || '',
+            MMERGE18: 'Funcionários',
             
             MMERGE13: guestDetails?.name || '',
             MMERGE14: guestDetails?.email || '',
@@ -120,6 +121,7 @@ if (!email || !email.includes('@')) {
           FNAME: guestDetails?.name || '',
           PHONE: guestDetails?.phone || '',
           MMERGE16: guestDetails?.relationship || '',
+          MMERGE18: 'Convidado',
         },
 
         tags: [
