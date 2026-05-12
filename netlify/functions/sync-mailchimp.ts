@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 export default async (request: Request) => {
   try {
     const body = await request.json()
@@ -25,16 +26,10 @@ export default async (request: Request) => {
       process.env.MAILCHIMP_SERVER_PREFIX ||
       apiKey.split('-')[1]
 
-    const subscriberHash = await crypto.subtle.digest(
-      'MD5',
-      new TextEncoder().encode(employee.email.toLowerCase())
-    )
-
-    const hashArray = Array.from(new Uint8Array(subscriberHash))
-    const hash = hashArray
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
-
+    const hash = createHash('md5')
+  .update(employee.email.toLowerCase())
+  .digest('hex')
+    
     const response = await fetch(
       `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members/${hash}`,
       {
