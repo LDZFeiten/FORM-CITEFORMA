@@ -73,28 +73,28 @@ useEffect(() => {
   try {
     const body = new URLSearchParams(new FormData(form) as never).toString()
 
-    const response = await fetch('/form-survey.html', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-    })
+    const response = await fetch('/', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  body,
+})
 
-    if (!response.ok) throw new Error('Submission failed')
+if (!response.ok) throw new Error('Submission failed')
 
-    const mailchimpResponse = await fetch(fetch('/api/sync-mailchimp'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        presence,
-        guest,
-        dietaryRestrictions: diet,
-        dietaryDetails: dietDetails,
-        employee,
-        guestDetails,
-      }),
-    })
+const mailchimpResponse = await fetch('/.netlify/functions/sync-mailchimp', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    presence,
+    guest,
+    dietaryRestrictions: diet,
+    dietaryDetails: dietDetails,
+    employee,
+    guestDetails,
+  }),
+})
 
     if (!mailchimpResponse.ok) {
       console.error('Mailchimp sync failed', await mailchimpResponse.text())
