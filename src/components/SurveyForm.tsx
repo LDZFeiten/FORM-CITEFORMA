@@ -86,9 +86,11 @@ useEffect(() => {
       setIsSubmitting(false)
     }
   
-    await fetch('/.netlify/functions/sync-mailchimp', {
-   method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+   const mailchimpResponse = await fetch('/.netlify/functions/sync-mailchimp', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
   body: JSON.stringify({
     presence,
     guest,
@@ -97,7 +99,15 @@ useEffect(() => {
     employee,
     guestDetails,
   }),
-})}
+})
+
+if (!mailchimpResponse.ok) {
+  console.error(
+    'Mailchimp sync failed',
+    await mailchimpResponse.text()
+  )
+}
+)}
   return (
     <main className="rsvp-stage">
       <div className="ambient ambient-a" />
