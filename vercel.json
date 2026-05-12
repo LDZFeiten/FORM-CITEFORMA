@@ -1,13 +1,9 @@
 {
-  "functions": {
-    "dist/server/server.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "routes": [
+  "buildCommand": "npm run build",
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/dist/server/server.js"
+      "source": "/(.*)",
+      "destination": "/dist/server/server.js"
     }
   ]
 }
