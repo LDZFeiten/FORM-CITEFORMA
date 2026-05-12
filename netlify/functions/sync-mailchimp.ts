@@ -13,7 +13,21 @@ export default async (request: Request) => {
     const body = await request.json()
 
     const { employee } = body
+const email = String(employee?.email || '').trim().toLowerCase()
 
+if (!email || !email.includes('@')) {
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      error: 'Missing or invalid employee email',
+      receivedEmployee: employee,
+    }),
+    {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  )
+}
     const apiKey = process.env.MAILCHIMP_API_KEY
     const audienceId = process.env.MAILCHIMP_AUDIENCE_ID
 
@@ -35,7 +49,7 @@ export default async (request: Request) => {
       process.env.MAILCHIMP_SERVER_PREFIX || apiKey.split('-')[1]
 
   const subscriberHash = createHash('md5')
-  .update(employee.email.toLowerCase())
+  .update(email.toLowerCase())
   .digest('hex')
 
     const mailchimpResponse = await fetch(
@@ -47,7 +61,7 @@ export default async (request: Request) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email_address: employee.email,
+          email_address: email,
           status_if_new: 'subscribed',
           merge_fields: {
             FNAME: employee.firstName || '',
