@@ -12,7 +12,13 @@ export default async (request: Request) => {
 }
     const body = await request.json()
 
-    const { employee } = body
+    const {
+  employee,
+  guestDetails,
+  guest,
+  dietaryRestrictions,
+  dietaryDetails,
+} = body
 const email = String(employee?.email || '').trim().toLowerCase()
 
 if (!email || !email.includes('@')) {
