@@ -232,7 +232,7 @@ useEffect(() => {
     <h2 className="screen-title">Dados do colaborador</h2>
 
     {isEditingProfile ? (
-      <div className="data-card space-y-4">
+      <div className="data-card edit-card">
         <label className="field-label">
           Nome
           <input
