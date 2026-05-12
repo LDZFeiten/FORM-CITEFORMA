@@ -227,33 +227,157 @@ useEffect(() => {
             )}
 
             {step === 'profile' && (
-              <section className="animate-rise space-y-6">
-                <PromptKicker label="Identity packet" />
-                <h2 className="screen-title">Dados do colaborador</h2>
-                <div className="data-card">
-                  {Object.entries({
-                    Nome: employee.name,
-                    Cargo: employee.role,
-                    Departamento: employee.department,
-                    Email: employee.email,
-                    Telefone: employee.phone,
-                  }).map(([label, value]) => (
-                    <div key={label} className="data-row">
-                      <span>{label}</span>
-                      <strong>{value}</strong>
-                    </div>
-                  ))}
-                </div>
-                <div className="space-y-3">
-                  <button type="button" className="primary-action" onClick={() => setStep('guest')}>
-                    Os dados estao corretos
-                  </button>
-                  <button type="button" className="choice-action" onClick={() => setIsEditingProfile(true)}>
-          <Pencil size={16} /> Editar informacoes
-                </button>
-                </div>
-              </section>
-            )}
+  <section className="animate-rise space-y-6">
+    <PromptKicker label="Identity packet" />
+    <h2 className="screen-title">Dados do colaborador</h2>
+
+    {isEditingProfile ? (
+      <div className="data-card space-y-4">
+        <label className="field-label">
+          Nome
+          <input
+            className="field-input"
+            value={employee.firstName}
+            onChange={(e) =>
+              setEmployee({
+                ...employee,
+                firstName: e.target.value,
+                name: `${e.target.value} ${employee.lastName}`.trim(),
+              })
+            }
+          />
+        </label>
+
+        <label className="field-label">
+          Sobrenome
+          <input
+            className="field-input"
+            value={employee.lastName}
+            onChange={(e) =>
+              setEmployee({
+                ...employee,
+                lastName: e.target.value,
+                name: `${employee.firstName} ${e.target.value}`.trim(),
+              })
+            }
+          />
+        </label>
+
+        <label className="field-label">
+          Cargo
+          <input
+            className="field-input"
+            value={employee.role}
+            onChange={(e) =>
+              setEmployee({ ...employee, role: e.target.value })
+            }
+          />
+        </label>
+
+        <label className="field-label">
+          Departamento
+          <input
+            className="field-input"
+            value={employee.department}
+            onChange={(e) =>
+              setEmployee({ ...employee, department: e.target.value })
+            }
+          />
+        </label>
+
+        <label className="field-label">
+          Email
+          <input
+            className="field-input"
+            type="email"
+            value={employee.email}
+            onChange={(e) =>
+              setEmployee({ ...employee, email: e.target.value })
+            }
+          />
+        </label>
+
+        <label className="field-label">
+          Telefone
+          <input
+            className="field-input"
+            value={employee.phone}
+            onChange={(e) =>
+              setEmployee({ ...employee, phone: e.target.value })
+            }
+          />
+        </label>
+
+        <label className="field-label">
+          Cidade
+          <input
+            className="field-input"
+            value={employee.city}
+            onChange={(e) =>
+              setEmployee({ ...employee, city: e.target.value })
+            }
+          />
+        </label>
+      </div>
+    ) : (
+      <div className="data-card">
+        {Object.entries({
+          Nome: employee.name,
+          Cargo: employee.role,
+          Departamento: employee.department,
+          Email: employee.email,
+          Telefone: employee.phone,
+          Cidade: employee.city,
+        }).map(([label, value]) => (
+          <div key={label} className="data-row">
+            <span>{label}</span>
+            <strong>{value}</strong>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div className="space-y-3">
+      {isEditingProfile ? (
+        <>
+          <button
+            type="button"
+            className="primary-action"
+            onClick={() => setIsEditingProfile(false)}
+          >
+            Guardar informacoes
+          </button>
+
+          <button
+            type="button"
+            className="choice-action"
+            onClick={() => setIsEditingProfile(false)}
+          >
+            Cancelar
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            type="button"
+            className="primary-action"
+            onClick={() => setStep('guest')}
+          >
+            Os dados estao corretos
+          </button>
+
+          <button
+            type="button"
+            className="choice-action"
+            onClick={() => setIsEditingProfile(true)}
+          >
+            <Pencil size={16} /> Editar informacoes
+          </button>
+        </>
+      )}
+    </div>
+  </section>
+)}
 
             {step === 'guest' && (
               <section className="animate-rise space-y-7">
